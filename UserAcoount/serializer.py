@@ -71,3 +71,20 @@ class UserAccountLoginSerializer(serializers.Serializer):
         validated_data["access"] = tokens["access"]
 
         return validated_data
+    
+
+class PrivateUserProfile(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            "uid",
+            "first_name",
+            "last_name",
+            "username",
+            "email",
+            "date_joined",
+            "last_login",
+            "user_type"
+        ]
+
+        read_only_fields = ("date_joined", "last_login")
