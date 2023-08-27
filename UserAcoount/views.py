@@ -19,3 +19,8 @@ class UserLogin(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         data = super().create(request, *args, **kwargs)
         return response.Response(status=status.HTTP_200_OK, data=data.data)
+    
+
+class PrivateUserprofile(generics.ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = UserAccountLoginSerializer
