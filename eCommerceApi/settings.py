@@ -48,7 +48,10 @@ THIRDPARTY_APPS = [
     "corsheaders",
 ]
 
-PROJECT_APPS = ["UserAcoount"]
+PROJECT_APPS = [
+    "UserAcoount",
+    "common",
+]
 
 INSTALLED_APPS = DJANGO_APPS + THIRDPARTY_APPS + PROJECT_APPS
 

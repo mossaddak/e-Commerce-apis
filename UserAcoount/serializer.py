@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
 
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
@@ -27,19 +28,14 @@ class UserAccountSerializer(serializers.ModelSerializer):
         read_only_fields = ("date_joined", "last_login")
 
     def create(self, validated_data, *args, **kwargs):
-        first_name = validated_data["first_name"]
-        last_name = validated_data["last_name"]
-        username = validated_data["username"]
-        user_type = validated_data["user_type"]
-        email = validated_data["email"].lower()
         password = validated_data["password"]
 
         user = User.objects.create(
-            first_name=first_name,
-            last_name=last_name,
-            username=username,
-            email=email,
-            user_type=user_type,
+            first_name=validated_data.get("first_name", ""),
+            last_name=validated_data.get("last_name", ""),
+            username=validated_data["username"],
+            email=validated_data["email"].lower(),
+            user_type=validated_data.get("user_type", ""),
         )
         user.set_password(password)
         user.save()
@@ -60,9 +56,9 @@ class UserAccountLoginSerializer(serializers.Serializer):
         if not user.check_password(password):
             raise AuthenticationFailed(detail="Invalid credentials.")
 
-        if not user.is_staff:
+        if not user:
             raise AuthenticationFailed(
-                detail="You are not allowed to log in on this page."
+                detail="Invalid credentials."
             )
 
         # Get JWT tokens
@@ -74,6 +70,8 @@ class UserAccountLoginSerializer(serializers.Serializer):
 
 
 class PrivateUserProfile(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=False)
+
     class Meta:
         model = User
         fields = [
@@ -85,6 +83,13 @@ class PrivateUserProfile(serializers.ModelSerializer):
             "user_type",
             "date_joined",
             "last_login",
+            "password",
         ]
 
         read_only_fields = ("date_joined", "last_login")
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop("password", None)
+        if password:
+            validated_data["password"] = make_password(password)
+        return super().update(instance, validated_data)
