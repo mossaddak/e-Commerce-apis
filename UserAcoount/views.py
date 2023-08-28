@@ -3,9 +3,6 @@ from django.contrib.auth import get_user_model
 from rest_framework import generics, status, response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.generics import get_object_or_404
-from rest_framework_simplejwt.authentication import (
-    JWTAuthentication
-)
 
 
 from .serializer import (
@@ -13,7 +10,6 @@ from .serializer import (
     UserAccountLoginSerializer,
     PrivateUserProfile,
 )
-from .custom_permissions import IsOwner
 
 User = get_user_model()
 
@@ -34,9 +30,8 @@ class UserLogin(generics.CreateAPIView):
         return response.Response(status=status.HTTP_200_OK, data=data.data)
 
 
-class PrivateUserprofile(generics.RetrieveAPIView):
+class PrivateUserprofile(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
     serializer_class = PrivateUserProfile
 
     def get_object(self):
