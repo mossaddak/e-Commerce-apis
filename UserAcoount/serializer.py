@@ -57,9 +57,7 @@ class UserAccountLoginSerializer(serializers.Serializer):
             raise AuthenticationFailed(detail="Invalid credentials.")
 
         if not user:
-            raise AuthenticationFailed(
-                detail="Invalid credentials."
-            )
+            raise AuthenticationFailed(detail="Invalid credentials.")
 
         # Get JWT tokens
         tokens = get_tokens_for_user(user)
@@ -67,6 +65,26 @@ class UserAccountLoginSerializer(serializers.Serializer):
         validated_data["access"] = tokens["access"]
 
         return validated_data
+
+    # Allternative way
+    # def validate(self, validated_data):
+    #     email = validated_data.get("email")
+    #     password = validated_data.get("password")
+    #     user = get_object_or_404(User.objects.filter(), email=email)
+    #     validated_data["user"] = user
+
+    #     if not user.check_password(password):
+    #         raise AuthenticationFailed(detail="Invalid credentials.")
+
+    #     if not user:
+    #         raise AuthenticationFailed(detail="Invalid credentials.")
+
+    #     # Get JWT tokens
+    #     # tokens = get_tokens_for_user(user)
+    #     # validated_data["refresh"] = tokens["refresh"]
+    #     # validated_data["access"] = tokens["access"]
+
+    #     return validated_data
 
 
 class PrivateUserProfile(serializers.ModelSerializer):

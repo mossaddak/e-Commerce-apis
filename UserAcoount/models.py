@@ -18,7 +18,6 @@ class User(AbstractUser):
         null=False,
         error_messages={"unique": "the email must be unique"},
     )
-    post_ofice = models.CharField(max_length=250, null=True, blank=True)
     user_type = models.CharField(
         max_length=50, choices=ACCOUNT_TYPE_CHOICES, default=BUYER
     )
@@ -30,3 +29,12 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.uid}.{self.email}"
+
+
+class Address(models.Model):
+    uid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="Addresses")
+    post_office = models.CharField(max_length=250, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.uid}.{self.user}"
