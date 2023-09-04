@@ -31,20 +31,20 @@ class UserLogin(generics.CreateAPIView):
         data = super().create(request, *args, **kwargs)
         return response.Response(status=status.HTTP_200_OK, data=data.data)
 
-    # Alternative way
+    # Alternative way 1
     # def create(self, request, *args, **kwargs):
     #     serializer = self.get_serializer(data=request.data)
     #     serializer.is_valid(raise_exception=True)
 
-    #     tokens = TokenHelper().create_token(serializer.validated_data["user"])
+    #     # tokens = TokenHelper().create_token(serializer.validated_data["user"])
     #     # validated_data["refresh"] = tokens["refresh"]
     #     # validated_data["access"] = tokens["access"]
 
-    #     data = {
-    #         "refresh": tokens[0],
-    #         "access": tokens[1],
-    #     }
-    #     return response.Response(status=status.HTTP_200_OK, data=data)
+    #     # data = {
+    #     #     "refresh": tokens[0],
+    #     #     "access": tokens[1],
+    #     # }
+    #     return response.Response(status=status.HTTP_200_OK, data=serializer.data)
 
 
 class PrivateUserprofile(generics.RetrieveUpdateDestroyAPIView):

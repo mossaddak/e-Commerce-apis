@@ -5,7 +5,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.generics import get_object_or_404
 
-from .utils import get_tokens_for_user
+from .utils import get_tokens_for_user, TokenHelper
 
 User = get_user_model()
 
@@ -56,9 +56,6 @@ class UserAccountLoginSerializer(serializers.Serializer):
         if not user.check_password(password):
             raise AuthenticationFailed(detail="Invalid credentials.")
 
-        if not user:
-            raise AuthenticationFailed(detail="Invalid credentials.")
-
         # Get JWT tokens
         tokens = get_tokens_for_user(user)
         validated_data["refresh"] = tokens["refresh"]
@@ -66,12 +63,12 @@ class UserAccountLoginSerializer(serializers.Serializer):
 
         return validated_data
 
-    # Allternative way
+    # Allternative way 1
     # def validate(self, validated_data):
     #     email = validated_data.get("email")
     #     password = validated_data.get("password")
     #     user = get_object_or_404(User.objects.filter(), email=email)
-    #     validated_data["user"] = user
+    #     # validated_data["user"] = user
 
     #     if not user.check_password(password):
     #         raise AuthenticationFailed(detail="Invalid credentials.")
@@ -81,10 +78,12 @@ class UserAccountLoginSerializer(serializers.Serializer):
 
     #     # Get JWT tokens
     #     # tokens = get_tokens_for_user(user)
-    #     # validated_data["refresh"] = tokens["refresh"]
-    #     # validated_data["access"] = tokens["access"]
-
-    #     return validated_data
+    #     refresh, access = TokenHelper().create_token(user)
+    #     data = {
+    #         "refresh": refresh,
+    #         "access": access,
+    #     }
+    #     return data
 
 
 class PrivateUserProfile(serializers.ModelSerializer):
